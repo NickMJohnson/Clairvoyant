@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Environment
+.env
+
+# Data (large files)
+data/
+
+# Node
+clairvoyantcrimewatch/node_modules/
+clairvoyantcrimewatch/dist/
+clairvoyantcrimewatch/dist-ssr/
+
+# macOS
+.DS_Store
