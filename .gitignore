@@ -19,3 +19,6 @@ clairvoyantcrimewatch/dist-ssr/
 
 # macOS
 .DS_Store
+
+# Claude Code
+CLAUDE.md
