@@ -80,6 +80,17 @@ class Sighting(Base):
     camera: Mapped["Camera"] = relationship()
     segment: Mapped["Segment"] = relationship()
 
+class ObjectDetection(Base):
+    """Per-detection crop + CLIP embedding for query-level bounding box grounding."""
+    __tablename__ = "object_detections"
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=gen_uuid)
+    segment_id: Mapped[str] = mapped_column(String, ForeignKey("segments.id"), index=True)
+    type: Mapped[str] = mapped_column(String)           # person / vehicle
+    bbox: Mapped[list] = mapped_column(JSON)             # [x, y, w, h] in original frame coords
+    color_hints: Mapped[list] = mapped_column(JSON, default=list)
+    crop_url: Mapped[str] = mapped_column(String, default="")
+    embedding: Mapped[list | None] = mapped_column(Vector(512), nullable=True)
+
 class EntityCandidate(Base):
     __tablename__ = "entity_candidates"
     id: Mapped[str] = mapped_column(String, primary_key=True, default=gen_uuid)
