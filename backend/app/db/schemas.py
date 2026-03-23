@@ -40,6 +40,8 @@ class DetectedObject(BaseModel):
     type: str
     bbox: list[float]
     colorHints: list[str] = []
+    detectionId: str = ""
+    relevanceScore: float = 0.0
 
 class EntityCandidateOut(BaseModel):
     entityId: str
@@ -53,6 +55,7 @@ class SegmentResult(BaseModel):
     endTime: str
     confidence: float
     thumbnailUrl: str
+    videoUrl: str = ""
     tags: list[str]
     objects: list[DetectedObject]
     entityCandidates: list[EntityCandidateOut] = []
