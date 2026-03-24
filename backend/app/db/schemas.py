@@ -70,6 +70,7 @@ class SearchFilters(BaseModel):
     endDate: str | None = None
     sortBy: str = "time"
     sortOrder: str = "desc"
+    limit: int = 200
 
 # Entity
 class SightingOut(BaseModel):

@@ -140,7 +140,7 @@ async def search_segments(
                 Segment.start_time.desc() if filters.sortOrder == "desc" else Segment.start_time.asc()
             )
 
-    query = query.limit(50)
+    query = query.limit(min(filters.limit, 500))
     result = await db.execute(query)
     segments = result.scalars().all()
 
