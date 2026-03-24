@@ -23,13 +23,14 @@ def _load_model():
     except ImportError:
         return False
 
-async def get_text_embedding(text: str) -> Optional[list[float]]:
+async def get_text_embedding(text: str, prompt_template: str = "a photo of {text}") -> Optional[list[float]]:
     """Embed a text query. Returns None if model not available."""
     if not _load_model():
         return None
     try:
         import torch
-        tokens = _tokenizer([text])
+        prompted = prompt_template.format(text=text)
+        tokens = _tokenizer([prompted])
         with torch.no_grad():
             features = _model.encode_text(tokens)
             features = features / features.norm(dim=-1, keepdim=True)
