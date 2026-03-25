@@ -109,33 +109,43 @@ export function VideoDrawer({ segment, onClose, searchQuery = "" }: VideoDrawerP
               preserveAspectRatio="xMidYMid meet"
             >
               {(() => {
-                const scores = segment.objects.map(o => o.relevanceScore ?? 0);
-                const maxScore = Math.max(...scores);
-                const avgScore = scores.reduce((a, b) => a + b, 0) / (scores.length || 1);
-                // Only highlight if top score is at least 0.015 above average (meaningful gap)
-                const hasScores = maxScore > 0;
-                const topIsDistinct = maxScore - avgScore > 0.015;
+                const rawScores = segment.objects.map(o => o.relevanceScore ?? 0);
+                const hasScores = rawScores.some(s => s > 0);
+
+                // Normalize scores within this segment (0 = least relevant, 1 = most relevant).
+                // This makes the best match always win when there is any spread,
+                // regardless of absolute score values.
+                const minS = Math.min(...rawScores);
+                const maxS = Math.max(...rawScores);
+                const spread = maxS - minS;
+                const normalized = rawScores.map(s => spread > 0.005 ? (s - minS) / spread : 0.5);
+                const topNorm = Math.max(...normalized);
+                // Highlight if there's meaningful spread between detections
+                const topIsDistinct = hasScores && spread > 0.005;
+
                 return segment.objects.map((obj, i) => {
                   const [x, y, w, h] = obj.bbox;
-                  const score = scores[i];
-                  const isTopMatch = hasScores && topIsDistinct && score === maxScore;
+                  const norm = normalized[i];
+                  const isTopMatch = topIsDistinct && norm === topNorm;
                   const color = obj.type === "person" ? "#3b82f6" : "#f59e0b";
                   const strokeColor = isTopMatch ? "#22c55e" : color;
-                  const opacity = isTopMatch ? 1 : hasScores ? 0.35 : 0.7;
+                  // Dim non-top detections proportionally to their normalized score
+                  const opacity = isTopMatch ? 1 : hasScores ? 0.15 + norm * 0.4 : 0.6;
                   const label = obj.type === "person" ? "Person" : "Vehicle";
-                  const scoreLabel = score > 0 ? ` ${Math.round(score * 100)}%` : "";
+                  // Show normalized relevance % (how relevant vs others in this frame)
+                  const pct = hasScores ? ` ${Math.round(norm * 100)}%` : "";
                   return (
                     <g key={i} opacity={opacity}>
                       <rect
                         x={x} y={y} width={w} height={h}
                         fill={isTopMatch ? "#22c55e18" : "none"}
                         stroke={strokeColor}
-                        strokeWidth={isTopMatch ? 10 : 5}
+                        strokeWidth={isTopMatch ? 10 : 4}
                         strokeDasharray={isTopMatch ? "none" : "20,8"}
                       />
                       <rect x={x} y={y - 40} width={Math.max(160, w)} height={40} fill={strokeColor} opacity={0.9} />
                       <text x={x + 8} y={y - 12} fill="white" fontSize="28" fontWeight="bold" fontFamily="monospace">
-                        {isTopMatch ? "✓ " : ""}{label}{scoreLabel}
+                        {isTopMatch ? "✓ " : ""}{label}{pct}
                       </text>
                     </g>
                   );
@@ -148,9 +158,15 @@ export function VideoDrawer({ segment, onClose, searchQuery = "" }: VideoDrawerP
         <div className="p-4 space-y-4">
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" className="text-xs">
-              <Download className="w-3 h-3 mr-1" /> Save Clip
-            </Button>
+            <a
+              href={segment.videoUrl
+                ? `http://localhost:8000${segment.videoUrl}`
+                : `http://localhost:8000${segment.thumbnailUrl}`}
+              download={`clip-${segment.cameraName.replace(/\s+/g, "-")}-${segment.startTime.slice(0, 19).replace(/:/g, "-")}.${segment.videoUrl ? "mp4" : "jpg"}`}
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs border border-border bg-transparent text-foreground hover:bg-secondary transition-colors font-mono"
+            >
+              <Download className="w-3 h-3" /> Save Clip
+            </a>
             <Button
               size="sm"
               variant="outline"
