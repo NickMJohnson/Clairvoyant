@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { getCamera, searchSegments } from "@/lib/api";
 import type { Camera, SegmentResult } from "@/lib/types";
-import { Video, MapPin, Search, Wifi, WifiOff, Play, Clock, Activity } from "lucide-react";
+import { Video, MapPin, Search, Wifi, WifiOff, Play, Clock, Activity, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,8 @@ const CameraPage = () => {
   const [segments, setSegments] = useState<SegmentResult[]>([]);
   const [selected, setSelected] = useState<SegmentResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+  const liveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Refs for each segment card so we can scroll to a specific one
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -35,6 +37,21 @@ const CameraPage = () => {
       setSelected(target ?? segs[segs.length - 1] ?? null);
     }).finally(() => setLoading(false));
   }, [cameraId, targetSegmentId]);
+
+  // Live simulation: auto-advance through segments newest → oldest → loop
+  useEffect(() => {
+    if (liveRef.current) clearInterval(liveRef.current);
+    if (!isLive || segments.length === 0) return;
+    liveRef.current = setInterval(() => {
+      setSelected(prev => {
+        const idx = segments.findIndex(s => s.id === prev?.id);
+        // Walk backwards (newest first); wrap to end when hitting the start
+        const next = idx <= 0 ? segments.length - 1 : idx - 1;
+        return segments[next];
+      });
+    }, 4000);
+    return () => { if (liveRef.current) clearInterval(liveRef.current); };
+  }, [isLive, segments]);
 
   // Scroll to the target segment once cards are rendered
   useEffect(() => {
@@ -75,26 +92,48 @@ const CameraPage = () => {
           {/* Header */}
           <div className="flex items-start justify-between shrink-0">
             <div>
-              <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                <Video className="w-5 h-5 text-primary" />
+              <h1
+                className="text-lg tracking-[0.06em] uppercase text-foreground flex items-center gap-2"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}
+              >
+                <Video className="w-4 h-4 text-primary" />
                 {camera.name}
               </h1>
-              <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 mt-1 text-[11px] font-mono text-muted-foreground">
                 <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{camera.locationLabel}</span>
                 <span className={cn(
-                  "flex items-center gap-1 text-xs px-2 py-0.5 rounded-full",
-                  camera.status === "online" ? "bg-success/10 text-success"
-                    : camera.status === "offline" ? "bg-destructive/10 text-destructive"
-                    : "bg-warning/10 text-warning"
+                  "flex items-center gap-1 px-2 py-0.5 border text-[10px] uppercase tracking-wider",
+                  camera.status === "online" ? "border-success/30 text-success bg-success/5"
+                    : camera.status === "offline" ? "border-destructive/30 text-destructive bg-destructive/5"
+                    : "border-warning/30 text-warning bg-warning/5"
                 )}>
-                  {camera.status === "online" ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+                  {camera.status === "online" ? <Wifi className="w-2.5 h-2.5" /> : <WifiOff className="w-2.5 h-2.5" />}
                   {camera.status}
                 </span>
               </div>
             </div>
-            <Button size="sm" onClick={() => navigate(`/dashboard?q=&cameraId=${camera.id}`)} className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0">
-              <Search className="w-3.5 h-3.5 mr-1" /> Search this camera
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Live toggle */}
+              <Button
+                size="sm"
+                variant={isLive ? "default" : "outline"}
+                onClick={() => setIsLive(v => !v)}
+                className={cn(
+                  "h-8 rounded-none text-[10px] font-mono uppercase tracking-widest px-3 gap-1.5",
+                  isLive && "bg-destructive hover:bg-destructive/90 border-destructive text-white"
+                )}
+              >
+                <Radio className={cn("w-3 h-3", isLive && "animate-pulse")} />
+                {isLive ? "Live" : "Simulate Live"}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => navigate(`/dashboard?q=&cameraId=${camera.id}`)}
+                className="h-8 rounded-none bg-primary text-primary-foreground hover:bg-primary/90 text-[10px] font-mono uppercase tracking-widest px-3"
+              >
+                <Search className="w-3 h-3 mr-1" /> Search
+              </Button>
+            </div>
           </div>
 
           {/* Video player */}
@@ -121,9 +160,9 @@ const CameraPage = () => {
             )}
             {selected && (
               <>
-                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded bg-black/60 text-white text-xs">
-                  <span className={cn("w-1.5 h-1.5 rounded-full", camera.status === "online" ? "bg-success animate-pulse" : "bg-muted")} />
-                  {camera.status === "online" ? "LIVE FEED" : camera.status.toUpperCase()}
+                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/70 text-white text-[10px] font-mono uppercase tracking-wider">
+                  <span className={cn("w-1.5 h-1.5", isLive ? "bg-destructive animate-pulse" : camera.status === "online" ? "bg-success animate-pulse" : "bg-muted")} />
+                  {isLive ? "Simulating Live" : camera.status === "online" ? "Live Feed" : camera.status}
                 </div>
                 <div className="absolute bottom-3 left-3 font-mono text-[10px] text-white/80 bg-black/50 px-2 py-0.5 rounded">
                   {new Date(selected.startTime).toLocaleString()}
