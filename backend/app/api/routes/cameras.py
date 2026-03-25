@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, exists
 from sqlalchemy.orm import selectinload
 from app.db.database import get_db
-from app.db.models import Camera, CameraGroup, User
+from app.db.models import Camera, CameraGroup, Segment, User
 from app.db.schemas import CameraOut, CameraGroupOut
 from app.api.deps import get_current_user
 
@@ -20,8 +20,17 @@ def camera_to_out(c: Camera) -> CameraOut:
     )
 
 @router.get("", response_model=list[CameraOut])
-async def list_cameras(db: AsyncSession = Depends(get_db), _: User = Depends(get_current_user)):
-    result = await db.execute(select(Camera))
+async def list_cameras(
+    has_segments: bool = Query(False, alias="hasSegments"),
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    query = select(Camera)
+    if has_segments:
+        query = query.where(
+            exists(select(Segment.id).where(Segment.camera_id == Camera.id))
+        )
+    result = await db.execute(query)
     return [camera_to_out(c) for c in result.scalars().all()]
 
 @router.get("/groups", response_model=list[CameraGroupOut])
