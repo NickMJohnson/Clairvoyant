@@ -143,6 +143,14 @@ export async function getEntity(entityId: string): Promise<Entity | undefined> {
   }
 }
 
+export async function getEntitySegments(entityId: string): Promise<SegmentResult[]> {
+  try {
+    return await request<SegmentResult[]>("GET", `/entities/${entityId}/segments`);
+  } catch {
+    return [];
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Saved Searches
 // ---------------------------------------------------------------------------
