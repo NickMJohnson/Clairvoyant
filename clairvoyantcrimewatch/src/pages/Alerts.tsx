@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { listAlerts, createAlert } from "@/lib/api";
+import { listAlerts, createAlert, deleteAlert } from "@/lib/api";
 import type { Alert } from "@/lib/types";
 import { Bell, Plus, Trash2, Clock, Camera, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,12 @@ const Alerts = () => {
   useEffect(() => {
     listAlerts().then(a => { setAlerts(a); setLoading(false); });
   }, []);
+
+  const handleDelete = async (id: string, name: string) => {
+    await deleteAlert(id);
+    setAlerts(prev => prev.filter(a => a.id !== id));
+    toast({ title: "Alert deleted", description: `"${name}" has been removed.` });
+  };
 
   const handleCreate = async () => {
     const alert = await createAlert({ ...newAlert, cameras: [], active: true });
@@ -110,7 +116,7 @@ const Alerts = () => {
                     <p className="text-[10px] text-warning mt-0.5">Last triggered: {new Date(a.lastTriggered).toLocaleString()}</p>
                   )}
                 </div>
-                <button className="p-1.5 text-muted-foreground hover:text-destructive transition-colors">
+                <button onClick={() => handleDelete(a.id, a.name)} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors cursor-pointer">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>

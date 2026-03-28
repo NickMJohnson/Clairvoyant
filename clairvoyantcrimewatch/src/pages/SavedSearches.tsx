@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { listSavedSearches } from "@/lib/api";
+import { listSavedSearches, deleteSavedSearch } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 import type { SavedSearch } from "@/lib/types";
 import { Bookmark, Search, Clock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,13 @@ const SavedSearches = () => {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleDelete = async (id: string) => {
+    await deleteSavedSearch(id);
+    setSearches(prev => prev.filter(s => s.id !== id));
+    toast({ title: "Search deleted" });
+  };
 
   useEffect(() => {
     listSavedSearches().then(s => { setSearches(s); setLoading(false); });
@@ -47,7 +55,7 @@ const SavedSearches = () => {
                 <Button size="sm" variant="outline" className="text-xs" onClick={() => navigate(`/dashboard?q=${encodeURIComponent(s.query)}`)}>
                   Run Again
                 </Button>
-                <button className="p-1.5 text-muted-foreground hover:text-destructive transition-colors">
+                <button onClick={() => handleDelete(s.id)} className="p-1.5 text-muted-foreground hover:text-destructive transition-colors cursor-pointer">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
