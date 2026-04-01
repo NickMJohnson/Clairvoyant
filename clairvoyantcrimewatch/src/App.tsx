@@ -11,6 +11,7 @@ import CameraPage from "./pages/CameraPage";
 import EntityPage from "./pages/EntityPage";
 import SavedSearches from "./pages/SavedSearches";
 import Alerts from "./pages/Alerts";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,7 +31,7 @@ const App = () => (
           <Route path="/entities/:entityId" element={<EntityPage />} />
           <Route path="/saved-searches" element={<SavedSearches />} />
           <Route path="/alerts" element={<Alerts />} />
-          <Route path="/settings" element={<Dashboard />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
