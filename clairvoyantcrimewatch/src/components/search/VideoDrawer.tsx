@@ -1,4 +1,5 @@
 import type { SegmentResult } from "@/lib/types";
+import { mediaUrl } from "@/lib/api";
 import { X, Download, Bell, Search, Eye, User, Car, Camera, Clock, Tag, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -83,14 +84,14 @@ export function VideoDrawer({ segment, onClose, searchQuery = "" }: VideoDrawerP
           {segment.videoUrl ? (
             <video
               key={segment.id}
-              src={`http://localhost:8000${segment.videoUrl}`}
+              src={mediaUrl(segment.videoUrl)}
               controls
               autoPlay
               className="w-full h-full object-contain"
             />
           ) : segment.thumbnailUrl ? (
             <img
-              src={`http://localhost:8000${segment.thumbnailUrl}`}
+              src={mediaUrl(segment.thumbnailUrl)}
               alt="Segment preview"
               className="w-full h-full object-contain"
             />
@@ -160,8 +161,8 @@ export function VideoDrawer({ segment, onClose, searchQuery = "" }: VideoDrawerP
           <div className="flex flex-wrap gap-2">
             <a
               href={segment.videoUrl
-                ? `http://localhost:8000${segment.videoUrl}`
-                : `http://localhost:8000${segment.thumbnailUrl}`}
+                ? mediaUrl(segment.videoUrl)
+                : mediaUrl(segment.thumbnailUrl)}
               download={`clip-${segment.cameraName.replace(/\s+/g, "-")}-${segment.startTime.slice(0, 19).replace(/:/g, "-")}.${segment.videoUrl ? "mp4" : "jpg"}`}
               className="inline-flex items-center gap-1 px-3 py-1.5 text-xs border border-border bg-transparent text-foreground hover:bg-secondary transition-colors font-mono"
             >

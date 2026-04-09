@@ -1,5 +1,6 @@
 import type { SegmentResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { mediaUrl } from "@/lib/api";
 import { Camera, Clock, User, Car } from "lucide-react";
 
 interface SegmentCardProps {
@@ -53,7 +54,7 @@ export function SegmentCard({ segment, onClick }: SegmentCardProps) {
       <div className="aspect-video bg-secondary relative overflow-hidden">
         {segment.thumbnailUrl ? (
           <img
-            src={`http://localhost:8000${segment.thumbnailUrl}`}
+            src={mediaUrl(segment.thumbnailUrl)}
             alt="Segment thumbnail"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}

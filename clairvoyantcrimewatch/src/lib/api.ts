@@ -9,6 +9,14 @@ import type { Camera, CameraGroup, SegmentResult, Entity, SavedSearch, Alert, Se
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 const TOKEN_KEY = "vs_token";
 
+// Resolve a media URL that may be absolute (R2) or relative (/media/...)
+const MEDIA_BASE = BASE_URL.replace("/api/v1", "");
+export function mediaUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  return `${MEDIA_BASE}${url}`;
+}
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { getCamera, searchSegments } from "@/lib/api";
+import { getCamera, searchSegments, mediaUrl } from "@/lib/api";
 import type { Camera, SegmentResult } from "@/lib/types";
 import { Video, MapPin, Search, Wifi, WifiOff, Play, Clock, Activity, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -141,7 +141,7 @@ const CameraPage = () => {
             {selected?.videoUrl ? (
               <video
                 key={selected.id}
-                src={`http://localhost:8000${selected.videoUrl}`}
+                src={mediaUrl(selected.videoUrl)}
                 className="w-full h-full object-contain"
                 controls
                 autoPlay
@@ -149,7 +149,7 @@ const CameraPage = () => {
               />
             ) : selected?.thumbnailUrl ? (
               <img
-                src={`http://localhost:8000${selected.thumbnailUrl}`}
+                src={mediaUrl(selected.thumbnailUrl)}
                 alt="Segment preview"
                 className="w-full h-full object-contain"
               />
@@ -256,7 +256,7 @@ const CameraPage = () => {
                 >
                   <div className="w-16 h-10 rounded bg-secondary overflow-hidden shrink-0">
                     {evt.thumbnailUrl
-                      ? <img src={`http://localhost:8000${evt.thumbnailUrl}`} alt="" className="w-full h-full object-cover" />
+                      ? <img src={mediaUrl(evt.thumbnailUrl)} alt="" className="w-full h-full object-cover" />
                       : <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">{evt.objects[0]?.type === "person" ? "👤" : "🚗"}</div>
                     }
                   </div>
@@ -302,7 +302,7 @@ const CameraPage = () => {
                   {/* Thumbnail */}
                   <div className="w-20 h-12 rounded bg-secondary overflow-hidden shrink-0 relative">
                     {seg.thumbnailUrl ? (
-                      <img src={`http://localhost:8000${seg.thumbnailUrl}`} alt="" className="w-full h-full object-cover" />
+                      <img src={mediaUrl(seg.thumbnailUrl)} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
                         <Video className="w-4 h-4" />

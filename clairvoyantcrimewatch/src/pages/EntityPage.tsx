@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { getEntity, getEntitySegments } from "@/lib/api";
+import { getEntity, getEntitySegments, mediaUrl } from "@/lib/api";
 import { VideoDrawer } from "@/components/search/VideoDrawer";
 import type { Entity, SegmentResult } from "@/lib/types";
 import { User, Car, Camera, Clock, ExternalLink } from "lucide-react";
@@ -68,7 +68,7 @@ const EntityPage = () => {
           <div className="w-36 h-36 shrink-0 relative bg-secondary border border-border overflow-hidden">
             {entity.primaryThumbnailUrl ? (
               <img
-                src={`http://localhost:8000${entity.primaryThumbnailUrl}`}
+                src={mediaUrl(entity.primaryThumbnailUrl)}
                 alt="Subject"
                 className="w-full h-full object-cover"
               />
@@ -191,7 +191,7 @@ const EntityPage = () => {
                     <div className="aspect-video bg-secondary relative overflow-hidden">
                       {seg.thumbnailUrl ? (
                         <img
-                          src={`http://localhost:8000${seg.thumbnailUrl}`}
+                          src={mediaUrl(seg.thumbnailUrl)}
                           alt=""
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
