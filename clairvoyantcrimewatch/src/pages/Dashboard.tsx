@@ -14,6 +14,7 @@ const Dashboard = () => {
   const query = searchParams.get("q") || "";
   const [results, setResults] = useState<SegmentResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<SegmentResult | null>(null);
   const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState<SearchFilters>({
@@ -25,9 +26,13 @@ const Dashboard = () => {
 
   const doSearch = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await searchSegments({ ...filters, query });
       setResults(res);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -49,9 +54,14 @@ const Dashboard = () => {
                 ? <><span className="text-muted-foreground font-normal">Query · </span><span className="text-primary">{query}</span></>
                 : "All Footage"}
             </h1>
-            {!loading && (
+            {!loading && !error && (
               <p className="text-[11px] font-mono text-muted-foreground mt-0.5 tracking-wider">
                 {results.length} segment{results.length !== 1 && "s"} indexed
+              </p>
+            )}
+            {error && (
+              <p className="text-[11px] font-mono text-red-500 mt-0.5 tracking-wider">
+                Error: {error}
               </p>
             )}
           </div>
