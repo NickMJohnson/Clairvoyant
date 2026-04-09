@@ -30,6 +30,10 @@ WILDTRACK_DIR = DATA_DIR / "wildtrack"
 THUMBNAILS_DIR = DATA_DIR / "thumbnails"
 THUMBNAILS_DIR.mkdir(parents=True, exist_ok=True)
 
+# Base URL for media files. Override with MEDIA_BASE_URL env var for production
+# e.g. MEDIA_BASE_URL=https://pub-xxx.r2.dev
+MEDIA_BASE_URL = os.environ.get("MEDIA_BASE_URL", "/media")
+
 # WILDTRACK: 25 FPS, frames every 10th frame (approximately 2.5 FPS effective)
 FRAME_RATE = 2.5
 SEGMENT_SECONDS = 5
@@ -114,7 +118,7 @@ async def save_thumbnail(frame_path: Path, segment_id: str) -> str:
         img.thumbnail((320, 240))
         out_path = THUMBNAILS_DIR / f"{segment_id}.jpg"
         img.save(out_path, "JPEG", quality=75)
-        return f"/media/thumbnails/{segment_id}.jpg"
+        return f"{MEDIA_BASE_URL}/thumbnails/{segment_id}.jpg"
     except Exception as e:
         print(f"  Could not save thumbnail: {e}")
         return ""

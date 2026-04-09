@@ -14,10 +14,12 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-DATA_DIR = Path("/data")
+DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
 WILDTRACK_DIR = DATA_DIR / "wildtrack" / "Image_subsets"
 CLIPS_DIR = DATA_DIR / "clips"
 CLIPS_DIR.mkdir(parents=True, exist_ok=True)
+
+MEDIA_BASE_URL = os.environ.get("MEDIA_BASE_URL", "/media")
 
 FRAME_RATE = 2.5  # WILDTRACK effective FPS
 BASE_FRAME = 0
@@ -111,7 +113,7 @@ async def main():
             success = build_clip(cam_key, start_frame, end_frame, clip_path)
 
             if success:
-                seg.video_url = f"/media/clips/{seg.id}.mp4"
+                seg.video_url = f"{MEDIA_BASE_URL}/clips/{seg.id}.mp4"
                 updated += 1
 
         await db.commit()
