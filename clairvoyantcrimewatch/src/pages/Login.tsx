@@ -80,8 +80,9 @@ const Login = () => {
           <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
         </div>
 
-        <div className="p-3 rounded-lg bg-warning/5 border border-warning/20 text-center">
-          <p className="text-xs text-warning">Demo Mode — Use any credentials to sign in</p>
+        <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary/40 text-center space-y-1">
+          <p className="text-sm font-semibold text-primary">Demo Account Pre-filled</p>
+          <p className="text-xs text-muted-foreground">Just click <span className="font-semibold text-foreground">Sign In</span> to view the demo</p>
         </div>
       </div>
     </div>
