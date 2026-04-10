@@ -28,8 +28,8 @@ def _load_model() -> bool:
     try:
         import open_clip
         import torch
-        _model, _, _preprocess = open_clip.create_model_and_transforms("ViT-B-32", pretrained="openai")
-        _tokenizer = open_clip.get_tokenizer("ViT-B-32")
+        _model, _, _preprocess = open_clip.create_model_and_transforms("ViT-B-32-quickgelu", pretrained="openai")
+        _tokenizer = open_clip.get_tokenizer("ViT-B-32-quickgelu")
         _model.eval()
         return True
     except ImportError:
