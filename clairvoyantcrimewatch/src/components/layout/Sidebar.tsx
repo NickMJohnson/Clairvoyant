@@ -17,8 +17,11 @@ export function Sidebar() {
 
   useEffect(() => {
     listCameraGroups().then(groups => {
-      setCameraGroups(groups);
-      if (groups.length > 0) setExpandedGroups([groups[0].id]);
+      const sorted = [...groups].sort((a, b) =>
+        a.name === "WILDTRACK" ? -1 : b.name === "WILDTRACK" ? 1 : 0
+      );
+      setCameraGroups(sorted);
+      if (sorted.length > 0) setExpandedGroups([sorted[0].id]);
     }).catch(() => {});
   }, []);
 
