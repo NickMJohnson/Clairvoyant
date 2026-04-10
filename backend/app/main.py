@@ -12,6 +12,10 @@ from app.core.config import settings
 async def lifespan(app: FastAPI):
     await init_db()
     await seed_demo_data()
+    # Pre-load embedding model so first search has no cold-start lag
+    import asyncio
+    from app.services.embed_service import _load_model, _load_onnx
+    await asyncio.get_event_loop().run_in_executor(None, lambda: _load_model() or _load_onnx())
     yield
 
 app = FastAPI(title="Clairvoyant API", lifespan=lifespan)
