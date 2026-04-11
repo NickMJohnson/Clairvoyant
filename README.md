@@ -4,7 +4,7 @@
 
 Instead of scrubbing through hours of footage, investigators type natural language queries — *"person with yellow backpack"*, *"white SUV near entrance"* — and instantly surface the exact clips across all cameras, ranked by visual similarity.
 
-![Clairvoyant Dashboard](https://via.placeholder.com/1200x600/0d0b09/f59e0b?text=Clairvoyant+%E2%80%94+AI+Video+Search)
+https://github.com/user-attachments/assets/4f3ba0f6-d51d-420f-84ce-10fc9ac4eb0c
 
 ---
 
