@@ -2,7 +2,7 @@
 
 **AI-powered video search engine for multi-camera surveillance environments.**
 
-**Live demo:** [clairvoyant-rouge.vercel.app](https://clairvoyant-rouge.vercel.app)
+**Live demo:** [Clairvoyant](https://clairvoyant-rouge.vercel.app)
 
 Instead of scrubbing through hours of footage, investigators type natural language queries — *"person with yellow backpack"*, *"white SUV near entrance"* — and instantly surface the exact clips across all cameras, ranked by visual similarity.
 
