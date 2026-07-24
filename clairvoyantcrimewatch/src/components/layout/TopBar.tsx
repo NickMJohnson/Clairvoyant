@@ -44,7 +44,7 @@ export function TopBar() {
         <div className="relative flex-1">
           <Input
             id="global-search"
-            placeholder='"man with red backpack near entrance"'
+            placeholder='"Man smoking a cigarette near entrance"'
             className="h-9 rounded-none border-border bg-secondary text-foreground placeholder:text-muted-foreground/45 focus-visible:ring-0 focus-visible:border-primary text-xs transition-colors font-mono pr-14"
             value={query}
             onChange={e => setQuery(e.target.value)}
